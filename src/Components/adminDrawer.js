@@ -23,6 +23,7 @@ import GroupIcon from '@mui/icons-material/Group';
 import LogoutIcon from '@mui/icons-material/Logout';
 import PendingList from './adminpendinglist';
 
+
 const drawerWidth = 240;
 
 const openedMixin = (theme) => ({
@@ -227,6 +228,7 @@ export default function MiniDrawer() {
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                 <DrawerHeader />
                 <PendingList />
+
 
             </Box>
         </Box>

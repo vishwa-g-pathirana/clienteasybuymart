@@ -31,6 +31,7 @@ import List from "@mui/material/List";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ListItem from "@mui/material/ListItem";
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
+import Album from "../Components/homepagebanner";
 
 const drawerWidth = 300;
 
@@ -114,7 +115,7 @@ const HomePage = () => {
 
   };
 
-  const navAdmin = () =>{
+  const navAdmin = () => {
     window.location = "/"
 
   };
@@ -130,6 +131,18 @@ const HomePage = () => {
     setOpen2(false);
   };
 
+  const handleClose1 = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen4(false);
+  };
+
+  const checkoutPage = () => {
+    window.location="checkout"
+  }
+
 
   const [description, setDescription] = useState("");
   const [name, setName] = useState("");
@@ -139,6 +152,9 @@ const HomePage = () => {
   const [quality, setQuality] = useState("");
   const [open, setOpen] = React.useState(false);
   const [open2, setOpen2] = React.useState(false);
+  const [open4, setOpen4] = React.useState(false);
+  const [items, setItem] = useState([]);
+  const [carts, setCart] = useState([]);
   const username = "user2"
 
 
@@ -163,12 +179,104 @@ const HomePage = () => {
       } catch (err) {
         console.error(err.message);
       }
+      window.location="/home"
       handleClick()
-      window.location = "/home"
+
 
     }
 
   }
+  //get products
+  const getItem = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/easybuymartprodviewclient")
+      const jsonDATA = await response.json();
+
+      setItem(jsonDATA);
+
+
+    } catch (err) {
+      console.error(err.message);
+    }
+
+
+  }
+
+  //get cart Item
+  const getcartItem = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/easybuymartcart")
+      const jsonDATA = await response.json();
+
+      setCart(jsonDATA);
+
+
+    } catch (err) {
+      console.error(err.message);
+    }
+
+
+  }
+
+  const addtoCart = async (id) => {
+
+    try {
+
+
+      const response = await fetch(
+        `http://localhost:5000/productcart/${id}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+
+        }
+      );
+      setItem(items.filter(item => item.prod_id != id))
+
+
+    } catch (err) {
+      console.error(err.message);
+    }
+    getItem()
+    setOpen2(true)
+    getcartItem()
+
+
+
+  };
+
+  const removefromCart = async (id) => {
+
+    try {
+
+
+      const response = await fetch(
+        `http://localhost:5000/productcartrmv/${id}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+
+        }
+      );
+      setItem(items.filter(item => item.prod_id != id))
+
+
+    } catch (err) {
+      console.error(err.message);
+    }
+    getItem()
+    setOpen4(true)
+    getcartItem()
+
+
+
+  };
+
+  useEffect(() => {
+    getItem();
+    getcartItem();
+
+  }, []);
 
   return <Fragment>
 
@@ -195,34 +303,33 @@ const HomePage = () => {
       </DrawerHeader>
       <Divider />
       <List>
+        {carts.map((cart , index) => (
+          <ListItem>
+            <Card sx={{ minWidth: 275 }}>
+              <CardContent>
+                <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+                  {cart.name}
+                </Typography>
 
-        <ListItem>
-        <Card sx={{ minWidth: 275 }}>
-      <CardContent>
-        <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-          Word of the Day
-        </Typography>
-        <Typography variant="h5" component="div">
-          be{bull}nev{bull}o{bull}lent
-        </Typography>
-        <Typography sx={{ mb: 1.5 }} color="text.secondary">
-          adjective
-        </Typography>
-        <Typography variant="body2">
-          well meaning and kindly.
-          <br />
-          {'"a benevolent smile"'}
-        </Typography>
-      </CardContent>
-      <CardActions>
-        <Button size="small">Learn More</Button>
-      </CardActions>
-    </Card>
+                <Typography sx={{ mb: 1.5 }} color="text.secondary">
+                  monthly rental is Rs {(cart.price / 3) + 5 | 0}
+                </Typography>
+                <Typography variant="body2">
+                  Total price is {cart.price}
 
-        </ListItem>
+                </Typography>
+              </CardContent>
+              <CardActions>
 
+                <Button onClick={() => removefromCart(cart.prod_id)} size="small">Remove</Button>
+              </CardActions>
+            </Card>
+
+
+          </ListItem>
+        ))}
+        <Button onClick={() => checkoutPage()} style={{ alignItems: 'center', justifyContent: 'center', padding: 10, display: 'flex' , marginLeft:10 }} variant="contained">Chechout</Button>
       </List>
-
 
     </Drawer>
 
@@ -230,7 +337,12 @@ const HomePage = () => {
 
       <Snackbar open={open2} autoHideDuration={6000} onClose={handleClose}>
         <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
-          This is a success message!
+          Item successfully added to the cart
+        </Alert>
+      </Snackbar>
+      <Snackbar open={open4} autoHideDuration={6000} onClose={handleClose1}>
+        <Alert onClose={handleClose1} severity="error" sx={{ width: '100%' }}>
+          Item successfully removed from cart
         </Alert>
       </Snackbar>
 
@@ -392,32 +504,40 @@ const HomePage = () => {
         </Toolbar>
       </Container>
     </AppBar>
-    <div style={{ alignItems: 'center', justifyContent: 'center', padding: 10, display: 'flex' }}>
-      <Card sx={{ maxWidth: 345, alignItems: "center", justifyContent: 'center' }}>
-        <CardMedia
-          component="img"
-          height="140"
-          image="/static/images/cards/contemplative-reptile.jpg"
-          alt="green iguana"
-        />
-        <CardContent>
-          <Typography gutterBottom variant="h5" component="div">
-            Lizard
+    <Album />
+
+    {/* product item */}
+
+    {items.map(item => (
+      <div style={{ alignItems: 'center', justifyContent: 'center', padding: 10, display: 'flex' }} key={item.prod_id}>
+        <Card sx={{ maxWidth: 345, minWidth: 345, alignItems: "center", justifyContent: 'center' }}>
+
+          <CardContent>
+            <Typography gutterBottom variant="h5" component="div">
+              {item.name}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {item.description}
+            </Typography>
+            <br></br>
+            <Typography variant="body2" color="text.secondary">
+              Total Value is RS {item.price} /=
         </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Lizards are a widespread group of squamate reptiles, with over 6,000
-            species, ranging across all continents except Antarctica
+            <Typography variant="body2" color="text.secondary">
+              Monthly Value is RS {(item.price / 3) + 5 | 0} /=
         </Typography>
-        </CardContent>
-        <CardActions>
-          <Button size="small">ADD TO CART</Button>
-          <Button size="small">Learn More</Button>
-        </CardActions>
-      </Card>
 
+          </CardContent>
+          <CardActions>
+            <Button onClick={() => addtoCart(item.prod_id)} size="small">ADD TO CART</Button>
 
+          </CardActions>
+        </Card>
+      </div>
+    ))}
 
-    </div>
+    {/* product item */}
+
     {/* <!-- Modal --> */}
     <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered" role="document">
