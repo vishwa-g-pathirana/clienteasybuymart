@@ -1,5 +1,5 @@
 
-import React, {  Fragment, useEffect, useState   } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -18,13 +18,80 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Card from '@mui/material/Card';
 import TextField from '@mui/material/TextField';
+import Stack from '@mui/material/Stack';
+import Collapse from '@mui/material/Collapse';
+import CloseIcon from '@mui/icons-material/Close';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
+import { styled, useTheme } from "@mui/material/styles";
+import Drawer from "@mui/material/Drawer";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import Divider from "@mui/material/Divider";
+import List from "@mui/material/List";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import ListItem from "@mui/material/ListItem";
+import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
+
+const drawerWidth = 300;
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
+const bull = (
+  <Box
+    component="span"
+    sx={{ display: 'inline-block', mx: '2px', transform: 'scale(0.8)' }}
+  >
+    •
+  </Box>
+);
+
+const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
+  ({ theme, open }) => ({
+    flexGrow: 1,
+    padding: theme.spacing(3),
+    transition: theme.transitions.create('margin', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+    marginRight: -drawerWidth,
+    ...(open && {
+      transition: theme.transitions.create('margin', {
+        easing: theme.transitions.easing.easeOut,
+        duration: theme.transitions.duration.enteringScreen,
+      }),
+      marginRight: 0,
+    }),
+  }),
+);
+
+
+
+const DrawerHeader = styled('div')(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  padding: theme.spacing(0, 1),
+  // necessary for content to be below app bar
+  ...theme.mixins.toolbar,
+  justifyContent: 'flex-start',
+}));
 
 const pages = ['Products', 'Pricing', 'Contact'];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+const settings = ['Profile', 'Account', 'board', 'Logout'];
 
 const HomePage = () => {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const theme = useTheme();
+  const [open3, setOpen3] = React.useState(false);
+
+  const handleDrawerOpen = () => {
+    setOpen3(true);
+  };
+  const handleDrawerClose = () => {
+    setOpen3(false);
+  };
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -40,35 +107,134 @@ const HomePage = () => {
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
+
+  };
+  const logOut = () => {
+    window.location = "/"
+
   };
 
+  const navAdmin = () =>{
+    window.location = "/"
+
+  };
+  const handleClick = () => {
+    setOpen(true);
+  };
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen2(false);
+  };
+
+
   const [description, setDescription] = useState("");
-  const [ name , setName ] = useState("");
-  const [ sellername , setSellername ] = useState("");
-  const [ qnt , setQnt ] = useState("");
-  const [ prize , setPrice ] = useState("");
-  const [ quality , setQuality ] = useState("");
+  const [name, setName] = useState("");
+  const [sellername, setSellername] = useState("");
+  const [qnt, setQnt] = useState("");
+  const [prize, setPrice] = useState("");
+  const [quality, setQuality] = useState("");
+  const [open, setOpen] = React.useState(false);
+  const [open2, setOpen2] = React.useState(false);
   const username = "user2"
+
+
 
   const onSubmitForm = async (e) => {
     e.preventDefault();
-    try {
+    if (name === "" || sellername === "" || description === "") {
+      setOpen(true)
 
-        const body = { description,name,sellername,qnt,prize,quality,username };
+    } else {
+      try {
+
+        const body = { description, name, sellername, qnt, prize, quality, username };
 
 
 
         const response = await fetch("http://localhost:5000/easybuymartprod", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(body)
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body)
         });
-    } catch (err) {
+      } catch (err) {
         console.error(err.message);
+      }
+      handleClick()
+      window.location = "/home"
+
     }
-}
+
+  }
 
   return <Fragment>
+
+    <Drawer
+      sx={{
+        width: drawerWidth,
+        flexShrink: 0,
+        "& .MuiDrawer-paper": {
+          width: drawerWidth
+        }
+      }}
+      variant="persistent"
+      anchor="right"
+      open={open3}
+    >
+      <DrawerHeader>
+        <IconButton onClick={handleDrawerClose}>
+          {theme.direction === "rtl" ? (
+            <ChevronLeftIcon />
+          ) : (
+            <ChevronRightIcon />
+          )}
+        </IconButton>
+      </DrawerHeader>
+      <Divider />
+      <List>
+
+        <ListItem>
+        <Card sx={{ minWidth: 275 }}>
+      <CardContent>
+        <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+          Word of the Day
+        </Typography>
+        <Typography variant="h5" component="div">
+          be{bull}nev{bull}o{bull}lent
+        </Typography>
+        <Typography sx={{ mb: 1.5 }} color="text.secondary">
+          adjective
+        </Typography>
+        <Typography variant="body2">
+          well meaning and kindly.
+          <br />
+          {'"a benevolent smile"'}
+        </Typography>
+      </CardContent>
+      <CardActions>
+        <Button size="small">Learn More</Button>
+      </CardActions>
+    </Card>
+
+        </ListItem>
+
+      </List>
+
+
+    </Drawer>
+
+    <Stack spacing={2} sx={{ width: '100%' }}>
+
+      <Snackbar open={open2} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
+          This is a success message!
+        </Alert>
+      </Snackbar>
+
+    </Stack>
     <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
@@ -181,12 +347,19 @@ const HomePage = () => {
 
           <Box sx={{ flexGrow: 0 }}>
 
-            <Button sx={{ marginRight: 3 }} variant="contained" data-toggle="modal" data-target="#exampleModalCenter">Add New Item</Button>
+            <Button sx={{ marginRight: 3, backgroundColor: 'orange' }} variant="contained" data-toggle="modal" data-target="#exampleModalCenter">Add New Item</Button>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
               </IconButton>
             </Tooltip>
+
+            <Tooltip title="Open settings">
+              <IconButton onClick={handleDrawerOpen} sx={{ p: 0, marginLeft: 3, color: 'white' }}>
+                <AddShoppingCartIcon />
+              </IconButton>
+            </Tooltip>
+
             <Menu
               sx={{ mt: '45px' }}
               id="menu-appbar"
@@ -203,11 +376,17 @@ const HomePage = () => {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))}
+
+              <MenuItem onClick={handleCloseUserMenu && logOut}>
+                <Typography textAlign="center">LogOut</Typography>
+              </MenuItem>
+              <MenuItem onClick={handleCloseUserMenu}>
+                <Typography textAlign="center">Account</Typography>
+              </MenuItem>
+              <MenuItem onClick={handleCloseUserMenu && navAdmin}>
+                <Typography textAlign="center">Dashboard</Typography>
+              </MenuItem>
+
             </Menu>
           </Box>
         </Toolbar>
@@ -253,40 +432,60 @@ const HomePage = () => {
             {/* model body */}
 
 
-              <div class="form-group">
-                <label for="exampleFormControlInput1">Item Name</label>
-                <input value="" type="text" class="form-control" id="exampleFormControlInput1" placeholder="Enter Item name" value={name} onChange={e => setName(e.target.value)} required></input>
-              </div>
+            <div class="form-group">
+              <label for="exampleFormControlInput1">Item Name</label>
+              <input value="" type="text" class="form-control" id="exampleFormControlInput1" placeholder="Enter Item name" value={name} onChange={e => setName(e.target.value)} required></input>
+            </div>
 
-              <div class="form-group">
-                <label for="exampleFormControlInput1">Seller Name</label>
-                <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Enter your name" value={sellername} onChange={e => setSellername(e.target.value)} required></input>
-              </div>
+            <div class="form-group">
+              <label for="exampleFormControlInput1">Seller Name</label>
+              <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Enter your name" value={sellername} onChange={e => setSellername(e.target.value)} required></input>
+            </div>
 
-              <div class="form-group">
-                <label for="exampleFormControlInput1">Quantity</label>
-                <input type="number" class="form-control" id="exampleFormControlInput1" placeholder="Enter item/items quantity" value={qnt} onChange={e => setQnt(e.target.value)} required></input>
-              </div>
+            <div class="form-group">
+              <label for="exampleFormControlInput1">Quantity</label>
+              <input type="number" class="form-control" id="exampleFormControlInput1" placeholder="Enter item/items quantity" value={qnt} onChange={e => setQnt(e.target.value)} required></input>
+            </div>
 
-              <div class="form-group">
-                <label for="exampleFormControlInput1">Price</label>
-                <input type="number" class="form-control" id="exampleFormControlInput1" placeholder="Enter item/items quantity" value={prize} onChange={e => setPrice(e.target.value)} required></input>
-              </div>
+            <div class="form-group">
+              <label for="exampleFormControlInput1">Price</label>
+              <input type="number" class="form-control" id="exampleFormControlInput1" placeholder="Enter item/items quantity" value={prize} onChange={e => setPrice(e.target.value)} required></input>
+            </div>
 
-              <div class="form-group">
-                <label for="exampleFormControlSelect1">Quality</label>
-                <select class="form-control" id="exampleFormControlSelect1">
-                  <option>Brand New</option>
-                  <option>Used</option>
+            <div class="form-group">
+              <label for="exampleFormControlSelect1">Quality</label>
+              <select class="form-control" id="exampleFormControlSelect1">
+                <option>Brand New</option>
+                <option>Used</option>
 
                   value={quality} onChange={e => setQuality(e.target.value)}
-                </select>
-              </div>
+              </select>
+            </div>
 
-              <div class="form-group">
-                <label for="exampleFormControlTextarea1">Description</label>
-                <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" value={description} onChange={e => setDescription(e.target.value)}></textarea>
-              </div>
+            <div class="form-group">
+              <label for="exampleFormControlTextarea1">Description</label>
+              <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" value={description} onChange={e => setDescription(e.target.value)}></textarea>
+            </div>
+            <Collapse in={open}>
+              <Alert
+                severity="error"
+                action={
+                  <IconButton
+                    aria-label="close"
+                    color="inherit"
+                    size="small"
+                    onClick={() => {
+                      setOpen(false);
+                    }}
+                  >
+                    <CloseIcon fontSize="inherit" />
+                  </IconButton>
+                }
+                sx={{ mb: 2 }}
+              >
+                You need to fill-out all sections
+        </Alert>
+            </Collapse>
 
 
             {/* end of the model body */}

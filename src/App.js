@@ -4,6 +4,7 @@ import HomePage from "./Pages/homepage";
 import { Route, BrowserRouter, Routes } from "react-router-dom";
 import Login from "./Pages/login";
 import SignUp from "./Pages/createaccount";
+import Admin from "./Pages/admin";
 
 function App() {
   return <Fragment>
@@ -12,6 +13,7 @@ function App() {
        <Route path="/" element={<Login />} />
        <Route path="/newuser" element={<SignUp />} />
        <Route path="/home" element={<HomePage />} />
+       <Route path="/admin" element={<Admin />} />
     </Routes>
     </BrowserRouter>
 

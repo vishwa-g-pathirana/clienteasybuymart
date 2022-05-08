@@ -12,6 +12,11 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import Alert from '@mui/material/Alert';
+import IconButton from '@mui/material/IconButton';
+import Collapse from '@mui/material/Collapse';
+import CloseIcon from '@mui/icons-material/Close';
+import LinearProgress from '@mui/material/LinearProgress';
 
 function Copyright(props) {
     return (
@@ -40,33 +45,50 @@ export default function SignIn() {
     const [users, setUsers] = useState("");
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [open, setOpen] = React.useState(false);
+    const [open2, setOpen2] = React.useState(false);
     const checkUser = async (e) => {
         e.preventDefault();
-        try {
-
-            const body = { username, password };
-
-
-
-            const response = await fetch("http://localhost:5000/easybuymartallusers", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(body)
-
-            });
-            const jsonDATA = await response.json();
-
-            setUsers(jsonDATA);
-            console.log(users)
-
-        } catch (err) {
-            console.error(err.message);
+        if(username === "admin" && password === "password"){
+            window.location="admin"
         }
-        if (password === users) {
-            window.location = "/home";
-        } else {
-            console.log("false")
+        else {
+            if (username === "" || password === "") {
+                setOpen(true);
+            } else {
+                try {
+
+                    const body = { username, password };
+
+
+
+                    const response = await fetch("http://localhost:5000/easybuymartallusers", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(body)
+
+                    });
+                    const jsonDATA = await response.json();
+
+                    setUsers(jsonDATA);
+
+
+                } catch (err) {
+                    console.error(err.message);
+                    setOpen2(true);
+                }
+                if (password === users) {
+                    window.location = "/home";
+                } else {
+                    setOpen2(true);
+                    console.log("false")
+                }
+
+            }
         }
+
+
+
     }
     useEffect(() => {
         checkUser();
@@ -91,6 +113,7 @@ export default function SignIn() {
                         Welcome to easyBUYmart
           </Typography>
                     <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+                    <LinearProgress />
                         <TextField
                             margin="normal"
                             required
@@ -113,6 +136,47 @@ export default function SignIn() {
                             autoComplete="current-password"
                             value={password} onChange={e => setPassword(e.target.value)}
                         />
+
+                        <Collapse in={open}>
+                            <Alert
+                                severity="error"
+                                action={
+                                    <IconButton
+                                        aria-label="close"
+                                        color="inherit"
+                                        size="small"
+                                        onClick={() => {
+                                            setOpen(false);
+                                        }}
+                                    >
+                                        <CloseIcon fontSize="inherit" />
+                                    </IconButton>
+                                }
+                                sx={{ mb: 2 }}
+                            >
+                                You need to fill-out all sections
+        </Alert>
+                        </Collapse>
+                        <Collapse in={open2}>
+                            <Alert
+                                severity="error"
+                                action={
+                                    <IconButton
+                                        aria-label="close"
+                                        color="inherit"
+                                        size="small"
+                                        onClick={() => {
+                                            setOpen2(false);
+                                        }}
+                                    >
+                                        <CloseIcon fontSize="inherit" />
+                                    </IconButton>
+                                }
+                                sx={{ mb: 2 }}
+                            >
+                                Your password and email doesnt match
+        </Alert>
+                        </Collapse>
                         <FormControlLabel
                             control={<Checkbox value="remember" color="primary" />}
                             label="Remember me"

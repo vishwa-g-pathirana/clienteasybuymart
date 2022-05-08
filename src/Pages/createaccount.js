@@ -12,6 +12,10 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import Alert from '@mui/material/Alert';
+import IconButton from '@mui/material/IconButton';
+import Collapse from '@mui/material/Collapse';
+import CloseIcon from '@mui/icons-material/Close';
 
 function Copyright(props) {
   return (
@@ -42,10 +46,14 @@ export default function SignUp() {
   const [ password , setPassword ] = useState("");
   const [ fname , setFname ] = useState("");
   const [ lname , setLname ] = useState("");
+  const [open, setOpen] = React.useState(false);
 
   const onSubmitForm = async (e) => {
     e.preventDefault();
-    try {
+    if(username === "" || password === "" || fname === "" || lname ===""){
+      setOpen(true);
+    }else{
+      try {
 
         const body = { username, password,fname,lname };
 
@@ -60,6 +68,9 @@ export default function SignUp() {
     } catch (err) {
         console.error(err.message);
     }
+
+    }
+
 }
 
 
@@ -129,6 +140,7 @@ export default function SignUp() {
                   value={password} onChange={e => setPassword(e.target.value)}
                 />
               </Grid>
+
               <Grid item xs={12}>
                 <FormControlLabel
                   control={<Checkbox value="allowExtraEmails" color="primary" />}
@@ -136,6 +148,26 @@ export default function SignUp() {
                 />
               </Grid>
             </Grid>
+            <Collapse in={open}>
+        <Alert
+        severity="error"
+          action={
+            <IconButton
+              aria-label="close"
+              color="inherit"
+              size="small"
+              onClick={() => {
+                setOpen(false);
+              }}
+            >
+              <CloseIcon fontSize="inherit" />
+            </IconButton>
+          }
+          sx={{ mb: 2 }}
+        >
+          You need to fill-out all sections
+        </Alert>
+      </Collapse>
             <Button
               type="submit"
               fullWidth
