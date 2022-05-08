@@ -17,6 +17,11 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
+import PendingActionsIcon from '@mui/icons-material/PendingActions';
+import DoneAllIcon from '@mui/icons-material/DoneAll';
+import GroupIcon from '@mui/icons-material/Group';
+import LogoutIcon from '@mui/icons-material/Logout';
+import PendingList from './adminpendinglist';
 
 const drawerWidth = 240;
 
@@ -96,6 +101,9 @@ export default function MiniDrawer() {
     const handleDrawerClose = () => {
         setOpen(false);
     };
+    const logout = () => {
+        window.location="/"
+    }
 
     return (
         <Box sx={{ display: 'flex' }}>
@@ -143,7 +151,7 @@ export default function MiniDrawer() {
                                 justifyContent: 'center',
                             }}
                         >
-                            <InboxIcon />
+                            <PendingActionsIcon />
                         </ListItemIcon>
                         <ListItemText primary={"Non Aproved Items"} sx={{ opacity: open ? 1 : 0 }} />
                     </ListItemButton>
@@ -164,7 +172,7 @@ export default function MiniDrawer() {
                                 justifyContent: 'center',
                             }}
                         >
-                            <InboxIcon />
+                            <DoneAllIcon />
                         </ListItemIcon>
                         <ListItemText primary={"Aproved Items"} sx={{ opacity: open ? 1 : 0 }} />
                     </ListItemButton>
@@ -185,13 +193,14 @@ export default function MiniDrawer() {
                                 justifyContent: 'center',
                             }}
                         >
-                            <InboxIcon />
+                            <GroupIcon />
                         </ListItemIcon>
                         <ListItemText primary={"Users"} sx={{ opacity: open ? 1 : 0 }} />
                     </ListItemButton>
                     {/* item  */}
                     {/* item  */}
                     <ListItemButton
+                    onClick={logout}
 
                         sx={{
                             minHeight: 48,
@@ -206,7 +215,7 @@ export default function MiniDrawer() {
                                 justifyContent: 'center',
                             }}
                         >
-                            <InboxIcon />
+                            <LogoutIcon />
                         </ListItemIcon>
                         <ListItemText primary={"Log Out"} sx={{ opacity: open ? 1 : 0 }} />
                     </ListItemButton>
@@ -217,6 +226,7 @@ export default function MiniDrawer() {
             </Drawer>
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                 <DrawerHeader />
+                <PendingList />
 
             </Box>
         </Box>
